@@ -1,5 +1,8 @@
 https://lazyfoo.net/tutorials/SDL/index.php
 https://github.com/haskell-game/sdl2/blob/master/examples/lazyfoo/
 https://www.haskell.org/cabal/users-guide/developing-packages.html
+http://hackage.haskell.org/package/tasty
+https://hackage.haskell.org/package/polysemy
+
 https://sandymaguire.me/
 

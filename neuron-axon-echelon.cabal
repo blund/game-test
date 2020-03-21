@@ -3,7 +3,7 @@ cabal-version:       >=1.10
 -- 'cabal init'.  For further documentation, see
 -- http://haskell.org/cabal/users-guide/
 
-name:                neuron-echelon
+name:                neuron-axon-echelon
 version:             0.1.0.0
 -- synopsis:
 -- description:
@@ -21,10 +21,25 @@ executable neuron-axon-echelon
   main-is:             Main.hs
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.12 && <4.13,
-                       polysemy,
-                       sdl2,
-                       sdl2-ttf,
-                       sdl2-mixer
+  build-depends:       
+    base >=4.12 && <4.13
+    , polysemy
+    , sdl2
+    , sdl2-ttf
+    , sdl2-mixer
+    , tasty
   hs-source-dirs:      src
   default-language:    Haskell2010
+
+test-suite test
+  default-language:
+    Haskell2010
+  type:
+    exitcode-stdio-1.0
+  hs-source-dirs:
+    tests
+  main-is:
+    test.hs
+  build-depends:
+      base >= 4 && < 5
+    , tasty >= 1.2.3
