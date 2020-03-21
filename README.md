@@ -1,2 +1,2 @@
-# neuron-axon-echelon
+# neuron axon echelon
 game

@@ -1,0 +1,174 @@
+NEURON AXON ECHELON
+
+
+hovedtema er hukommelse, hva det betyr å glemme osv.
+
+karakterer referer til en bakgrunnshistorie som karakteren ikke
+husker (og som spilleren ikke vet om). karakteren vil forsøke å
+bygge sin egen identitet fra hendelsene som skjer, men karakterene
+omkring han vil ikke gi slipp på ting som har skjedd før.  presentasjoner av hukommelsen hans, som er vage bilder av
+ansiktene til personene, men at deler faller inn og ut, 
+pulserende områder osv - uklart.
+Spilleren vil huske hvordan karakteren ser ut, men..
+
+Bruker combat som en måte å komme vekk fra virkeligheten, men 
+kommer alltid tilbake.
+
+Etter hvert åpnes deler av spillet hvor minnet kommer inn.
+Monstre kan gjøre psych-damage. 
+
+Åpner et nytt nivå som er bevissthet, som bærer samme estetikk
+som visualiseringen av personers ansikter.
+
+Spillet gir deg muligheten til å velge svar i dialog. Spørsmålene
+er som regel noe spilleren ikke vet svaret på, og har dermed to
+valg som er implisert (selv om at dette ikke er forklart). Det
+ene er løgnen. Denne er formulert slik at den som spør spørsmålet
+blir tilfredsstilt og går videre. Det andre er et usikkert men
+ærlig svar. Dette skuffer som regel den som spør, mens andre gir
+empatiske tilbakemeldinger. Andre tar det ok i begynnelsen, men
+med tiden blir de oppgitt og aggressive. 
+Derimot, om man velger å være uærlig, vil svarene ende opp med
+å gå i mot ting man kan ha sagt tidligere, noe som gjør
+de andre karakterene usikre på deg.
+
+Vi er hele i oss selv. Vi trenger andre. Av og til behøver vi
+at andre minner oss på hvem vi har vært. Vi kan ikke huske alt
+alle andre husker, men de kan huske det for oss. Andre gjør oss 
+hele.
+
+I dialog med noen man har løyet til, kan man ikke lengre velge
+replikken som baserer seg på sannheten, og må lyve videre.
+Dette vil være signalisert med at boksen omkring blir mørkegrå, 
+mens den andre vil være lysegrå. Teksten vil også være mørket ut.
+Det vil derimot være mulig å velge disse, man må bare trykke flere
+ganger. Grafikken vil gi respons på dette etter en par trykk med at
+skjermen rister og ting bryter sammen i verdenen. Man mister også liv.
+
+Det vil være karakterer som utgir seg for å være snille, men som også
+lyver til deg. Dette vil ikke være tydelig, man må forstå det selv
+ved å huske hva som blir sagt. 
+
+På et tidspunkt blir du presentert for muligheten til å gjøre opp for
+deg for en løgn du har sagt. Du har to valg, hvor den ene er å 
+vedlikeholde løgnen og det andre er å være ærlig om løgnen. Om du velger
+løgnen, bryter karakteren sammen og forteller sannheten. Om du velger
+å fortelle sannheten, hopper pekeren opp til løgnen og den velges. 
+Etter å ha pratet tenker karakteren "hva skjedde", lik som spilleren, 
+men personen du pratet med gir en positiv respons og uttrykker glede.
+
+Er det en måte å binde sammen dette med glassdomen? Og glassmaskene
+folk har på seg? Og hvordan de brister og knuser? Hva denne "døden" 
+betyr, som et slags brudd på ego a la evangelion.
+
+Tidlig blir du presentert for at det er ting du har løyet om i fortiden
+som du ikke husker. Det er ikke noe du kan gjøre med det, og du må 
+velge om du vil fortsette å lyve og opprettholde "sannheten", eller
+om du vil bryte vekk fra det. Samtidig er du ikke alltid klar over
+hva som er sannhet eller hva som er løgner, hva du har sagt og glemt.
+
+
+Dream og Memory som bosser man vil bekjempe
+og til slutt: Truth
+
+Karakterer sier ting som ikke helt gir mening - sier det ikke
+til personen du spiller som, men sier det til deg - spilleren.
+
+----------------------------------
+Inspirasjon til tema/historier/etc
+----------------------------------
+
+Ego
+Løgner
+Minner
+Sannhet
+Drømmer
+Drømmetyding
+Astrologi
+Postmodernisme
+https://www.quora.com/What-is-the-origin-of-truth
+
+
+"The Archetypaø Resonance of Classical JRPGS"
+https://www.hyperindexed.com/blog/2019/4/6/the-archetypal-resonance-of-classic-jrpgs
+https://news.ycombinator.com/item?id=19598191 
+
+
+Richard Feynman
+Hvilke videoer er i The Witness?
+James Burke art documentary
+Jonathan Blow
+The Secret of Psalm 46 - Brian Moriarty
+Joseph Anderson The Witness 31:20 "Complex story"
+Finnegans's Wake
+Catch-22
+
+
+Hell is other people skuespill
+Evangelion
+"Nostaglia"?
+
+
+Memories of Emanon
+Kafka
+Mannen blant Mengden
+Syvlia Plath - glassklokken
+Straight up Bibelen
+
+
+Chrono Trigger
+Bravely Default
+FF III
+FF VI
+Phantasy Star IV
+Lufia 2
+FF IX
+Earthbound
+Stardew Valley
+Secret of Mana
+The Witness
+    I The Witness er det puslespill som blir presentert på tavler
+    som løses ved å dra streker fra en start til et mål. Tvisten
+    er derimot at disse også forekommer i miljøet omkring tavlene.
+    Tanken her er å gjøre det samme med dialog/combat. Man kan snakke
+    sloss med seg selv, naturen, minner eller bevissthet på samme måte, 
+    noe som ikke er klart fra begynnelsen, men som åpenbarer seg etter
+    hvert.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Inspirasjon til utvikling
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+"A game in a pure language"
+https://flowing.systems/2020/01/13/a-game-in-a-pure-language-part-1-introduction-and-problems-with-idris.html
+
+"Beginning Game Programming"
+https://lazyfoo.net/tutorials/SDL/index.php
+
+"Game Programming Patterns"
+https://news.ycombinator.com/item?id=7634734
+
+
+
+http://thegamedesignforum.com/features/JRPG_UI_SURVEY.pdf
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+MUSIKK
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+city pop
+Italo Disco
+Tangerine Dream
+Nobue Uematsu
+https://www.youtube.com/watch?v=cIMKJ43TFLs&list=RDcIMKJ43TFLs&start_radio=1
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Diverse
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+https://grumpygamer.com/why_adventure_games_suck
+http://www.oldmanmurray.com/features/77.html
