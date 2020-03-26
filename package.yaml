@@ -1,0 +1,59 @@
+name:                neuron-axon-echelon
+version:             0.1.0.0
+github:              "blund/neuron-axon-echelon"
+license:             BSD3
+author:              "Børge Lundsaunet"
+maintainer:          "boergelun@gmail.com"
+copyright:           "2020 Børge Lundsaunet"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/nae#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- polysemy
+- sdl2
+- sdl2-ttf
+- sdl2-mixer
+- sdl2-image
+- text
+- extra
+- StateVar
+- word8
+
+library:
+  source-dirs: src
+  exposed-modules: [Common]
+
+executables:
+  neuron-axon-echelon-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -O2
+    dependencies:
+    - neuron-axon-echelon
+
+tests:
+  neuron-axon-echelon-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - neuron-axon-echelon
