@@ -2,6 +2,7 @@ module Common where
 
 import qualified SDL
 import qualified SDL.Image
+import qualified SDL.Font
 
 import Control.Monad          (void)
 import Control.Monad.IO.Class (MonadIO)
@@ -22,6 +23,12 @@ withSDLImage op = do
   SDL.Image.initialize []
   void op
   SDL.Image.quit
+
+withSDLFont :: (MonadIO m) => m a -> m ()
+withSDLFont op = do
+  SDL.Font.initialize
+  void op
+  SDL.Font.quit 
 
 
 withWindow :: (MonadIO m) => Text -> (Int, Int) -> (SDL.Window -> m a) -> m ()
