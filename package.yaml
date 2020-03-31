@@ -22,7 +22,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - polysemy
-- sdl2
+- sdl2 >= 2.5
 - sdl2-ttf
 - sdl2-mixer
 - sdl2-image
@@ -30,10 +30,12 @@ dependencies:
 - extra
 - StateVar
 - word8
+- vector
+- containers
 
 library:
   source-dirs: src
-  exposed-modules: [Common]
+  exposed-modules: [Utils, Controller, World, Draw, App]
 
 executables:
   neuron-axon-echelon-exe:

@@ -1,4 +1,9 @@
-module Controller where
+module Controller
+  ( Intent(..)
+  , Button(..)
+  , mkIntent
+  )
+where
 
 import qualified SDL
 import qualified SDL.Input.GameController      as SDL
