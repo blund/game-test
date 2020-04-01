@@ -5,9 +5,13 @@ module App
 where
 
 import qualified SDL
-import qualified World                         as W
-import qualified Controller                    as C
+import           World
+import           Controller
 
+
+import           Prelude                 hiding ( Left
+                                                , Right
+                                                )
 import           Data.Word                      ( Word32 )
 import           Data.Foldable                  ( foldl' )
 import           Control.Monad                  ( unless )
@@ -28,8 +32,8 @@ class (Monad m) => MonadTerminal m where
 instance MonadTerminal IO where
     printString = putStrLn
 
-runApp :: (Monad m) => (W.World -> m W.World) -> W.World -> m ()
-runApp f = repeatUntil f W.exiting
+runApp :: (Monad m) => (World -> m World) -> World -> m ()
+runApp f = repeatUntil f exiting
 
 
 repeatUntil :: (Monad m) => (a -> m a) -> (a -> Bool) -> a -> m ()
@@ -37,44 +41,50 @@ repeatUntil f p = go where go a = f a >>= \b -> unless (p b) (go b)
 
 
 appLoop
-    :: (MonadSDLPoll m, MonadTerminal m)
-    => (W.World -> m ())
-    -> W.World
-    -> m W.World
+    :: (MonadSDLPoll m, MonadTerminal m) => (World -> m ()) -> World -> m World
 appLoop renderFunc a = do
     a' <- updateApp a <$> pollIntents
     a' <$ renderFunc a'
 
 
-updateTime :: MonadSDLPoll m => W.World -> m W.World
-updateTime a = ticks >>= \t -> return a { W.time = t - W.time a }
+updateTime :: MonadSDLPoll m => World -> m World
+updateTime a = ticks >>= \t -> return a { time = t - time a }
 
 
-updateApp :: W.World -> [C.Intent] -> W.World
+updateApp :: World -> [Intent] -> World
 updateApp a = stepFrame . foldl' applyIntent a
 
 
-pollIntents :: MonadSDLPoll m => m [C.Intent]
-pollIntents = eventToIntent `fmap2` pollEvents -- her er det vi vil fmappe i en liste, altså vi må fmappe fmappingen!
-    where fmap2 = fmap . fmap
+pollIntents :: (MonadTerminal m, MonadSDLPoll m) => m [Intent]
+pollIntents = mkIntent `fmap2` pollEvents -- her er det vi vil fmappe i en liste, altså vi må fmappe fmappingen!
+        where fmap2 = fmap . fmap
 
 
-eventToIntent :: SDL.Event -> C.Intent
-eventToIntent (SDL.Event _t SDL.QuitEvent) = C.Quit
-eventToIntent _                            = C.Idle
+eventToIntent :: SDL.Event -> Intent
+eventToIntent (SDL.Event _t SDL.QuitEvent) = Quit
+eventToIntent _                            = Idle
+
+step = 10
+
+applyIntent :: World -> Intent -> World
+applyIntent a Quit = a { exiting = True }
+applyIntent a (Con Up) =
+    let p = player a in a { player = p { yPos = yPos p - step } }
+applyIntent a (Con Down) =
+    let p = player a in a { player = p { yPos = yPos p + step } }
+applyIntent a (Con Left) =
+    let p = player a in a { player = p { xPos = xPos p - step } }
+applyIntent a (Con Right) =
+    let p = player a in a { player = p { xPos = xPos p + step } }
+applyIntent a Idle = a
 
 
-applyIntent :: W.World -> C.Intent -> W.World
-applyIntent a C.Quit = a { W.exiting = True }
-applyIntent a C.Idle = a
+stepFrame :: World -> World
+stepFrame a = a { frame = frame a + 1 }
 
-
-stepFrame :: W.World -> W.World
-stepFrame a = a { W.frame = W.frame a + 1 }
-
-logFPS :: MonadTerminal m => W.World -> m ()
+logFPS :: MonadTerminal m => World -> m ()
 logFPS world = do
-    let frames   = W.frame world
-        seconds  = fromIntegral (W.time world) / 1000
+    let frames   = frame world
+        seconds  = fromIntegral (time world) / 1000
         seconds' = if seconds <= 0 then 1 else seconds
     printString (show (fromIntegral frames / seconds))

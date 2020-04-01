@@ -18,7 +18,7 @@ import           Prelude                 hiding ( Left
                                                 )
 import           Data.Vector                    ( head )
 import qualified Data.Map.Strict               as M
-import           Data.Word8                     ( Word8 )
+import           Data.Word                     ( Word8 )
 import           Foreign.C.String               ( withCString )
 
 data Intent
@@ -36,9 +36,10 @@ data Button
   | Select
   | LeftShoulder
   | RightShoulder
+  deriving (Bounded, Enum, Ord, Eq)
 
-mkIntent :: Maybe SDL.Event -> Intent
-mkIntent = maybe Idle (payloadToIntent . extractPayload)
+mkIntent :: SDL.Event -> Intent
+mkIntent = payloadToIntent . extractPayload
 
 extractPayload :: SDL.Event -> SDL.EventPayload
 extractPayload (SDL.Event _t p) = p

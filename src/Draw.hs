@@ -99,7 +99,7 @@ mkDraw sprite world = (texture, Just mask, Just pos)
   resize  = 8
   height' = fromIntegral height * resize
   width'  = fromIntegral width * resize
-  pos     = U.mkRect (xPos world) (yPos world) width' height'
+  pos     = U.mkRect (xPos (player world)) (yPos (player world)) width' height'
 
 
 draw :: MonadSDLRender m => SDL.Renderer -> Sprite -> World -> m ()
