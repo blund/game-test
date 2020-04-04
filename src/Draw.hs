@@ -96,7 +96,7 @@ mkDraw sprite world = (texture, Just mask, Just pos)
  where
   Sprite texture width height frames = sprite
   mask    = getMask (frame world) frames height width
-  resize  = 8
+  resize  = 4
   height' = fromIntegral height * resize
   width'  = fromIntegral width * resize
   pos     = U.mkRect (xPos (player world)) (yPos (player world)) width' height'
