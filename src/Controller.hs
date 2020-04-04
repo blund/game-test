@@ -11,21 +11,11 @@ where
 
 import qualified SDL
 import qualified SDL.Input.GameController      as SDL
-import           SDL.Raw.Event                  ( gameControllerAddMappingsFromFile
-                                                )
-import           Control.Monad.IO.Class         ( MonadIO )
-import           Control.Monad                  ( void )
-import           Control.Monad.Extra            ( whileM )
 import           Prelude                 hiding ( Left
                                                 , Right
-                                                , head
                                                 )
-import           Data.Vector                    ( head )
-import           Data.Maybe                     ( catMaybes )
-import qualified Data.Map.Strict               as M
-                                         hiding ( map )
 import           Data.Word                      ( Word8 )
-import           Foreign.C.String               ( withCString )
+
 
 data Intent = Left | Right | Up | Down | Idle | Quit deriving (Show)
 
@@ -79,10 +69,6 @@ getButton D      ss = d ss
 getButton L      ss = l ss
 getButton R      ss = r ss
 
-
--- initialButtonStates =
---  M.fromList $ map (, Released) ([minBound .. maxBound] :: [Button])
-
 initialButtonStates = ButtonStates Released
                                    Released
                                    Released
@@ -104,10 +90,15 @@ mkIntent ss = [quit, up, down, left, right]
   down  = select D Down
   left  = select L Left
   right = select R Right
-  quit  = select Select Quit
+  quit  = if getButton Select ss == Pressed && getButton Start ss == Pressed
+    then Quit
+    else Idle
 
 applyEvent :: SDL.Event -> ButtonStates -> ButtonStates
 applyEvent e s = applyTransitions s . payloadToTransitions . extractPayload $ e
+
+extractPayload :: SDL.Event -> SDL.EventPayload
+extractPayload (SDL.Event _t p) = p
 
 applyTransitions :: ButtonStates -> [Transition] -> ButtonStates
 applyTransitions = foldr apply
@@ -115,17 +106,11 @@ applyTransitions = foldr apply
   apply :: Transition -> ButtonStates -> ButtonStates
   apply (acc, s) = setButton acc s
 
-extractPayload :: SDL.Event -> SDL.EventPayload
-extractPayload (SDL.Event _t p) = p
 
 payloadToTransitions :: SDL.EventPayload -> [Transition]
 payloadToTransitions (SDL.JoyAxisEvent   k) = fromJoyAxis k
 payloadToTransitions (SDL.JoyButtonEvent k) = [fromJoyButton k]
 payloadToTransitions _                      = []
-
-fromJoyButton :: SDL.JoyButtonEventData -> Transition
-fromJoyButton (SDL.JoyButtonEventData _ button state) =
-  (buttonMap button, buttonStateMap state)
 
 fromJoyAxis :: SDL.JoyAxisEventData -> [Transition]
 fromJoyAxis (SDL.JoyAxisEventData _ 0 val)
@@ -136,6 +121,10 @@ fromJoyAxis (SDL.JoyAxisEventData _ 1 val)
   | val == 0 = [(U, Released), (D, Released)]
   | val < 0  = [(U, Pressed)]
   | val > 0  = [(D, Pressed)]
+
+fromJoyButton :: SDL.JoyButtonEventData -> Transition
+fromJoyButton (SDL.JoyButtonEventData _ button state) =
+  (buttonMap button, buttonStateMap state)
 
 buttonMap :: Word8 -> Button
 buttonMap 0 = X
