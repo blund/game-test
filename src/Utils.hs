@@ -1,7 +1,10 @@
+
+{-# LANGUAGE FlexibleContexts   #-}
 module Utils where
 
 import qualified SDL
 import qualified SDL.Image
+import qualified SDL.Framerate as F
 import qualified SDL.Font
 import qualified SDL.Input.Joystick
 
@@ -9,6 +12,7 @@ import           Control.Monad                  ( void )
 import           Control.Monad.IO.Class         ( MonadIO
                                                 , liftIO
                                                 )
+import Control.Monad.Trans.Control
 import           Data.Text                      ( Text )
 
 import qualified Data.Vector                   as V
@@ -21,6 +25,8 @@ withSDL flags op = do
   void op
   SDL.quit
 
+withFPSManager :: (MonadBaseControl IO m, MonadIO m) => F.Framerate -> (F.Manager -> m a) -> m a
+withFPSManager = F.with
 
 withSDLImage :: (MonadIO m) => m a -> m ()
 withSDLImage op = do

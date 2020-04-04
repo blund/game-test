@@ -5,6 +5,7 @@ module App
 where
 
 import qualified SDL
+import qualified SDL.Framerate as F
 import           World
 import           Controller
 
@@ -40,7 +41,7 @@ repeatUntil :: (Monad m) => (a -> m a) -> (a -> Bool) -> a -> m ()
 repeatUntil f p = go where go a = f a >>= \b -> unless (p b) (go b)
 
 
-appLoop :: (MonadTerminal m, MonadSDLPoll m) => (World -> m ()) -> World -> m World
+appLoop :: (MonadSDLPoll m) => (World -> m ()) -> World -> m World
 appLoop renderFunc a = let s = buttons a in do
     e <- pollEvents
     let s' = foldr applyEvent s e
@@ -77,7 +78,7 @@ eventToIntent :: SDL.Event -> Intent
 eventToIntent (SDL.Event _t SDL.QuitEvent) = Quit
 eventToIntent _                            = Idle
 
-step = 2
+step = 1
 
 applyIntent :: World -> Intent -> World
 applyIntent a Quit = a { exiting = True }
