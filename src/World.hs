@@ -17,12 +17,9 @@ data World = World
   , countedFrames :: Int
   , time :: Word32
   , player :: Player
-  , activeButtons :: ButtonStates
+  , buttons :: ButtonStates
   }
 
-
-
-type ButtonStates = M.Map Button Bool
 
 data Player = Player
   {
@@ -38,5 +35,5 @@ initialWorld = World
   , countedFrames = 0
   , time          = 0
   , player        = Player 0 0
-  , activeButtons = M.fromList $ map (\b -> (b, False)) [minBound .. maxBound]
+  , buttons = initialButtonStates
   }

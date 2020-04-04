@@ -30,7 +30,7 @@ class (Monad m) => MonadTerminal m where
   printString :: String -> m ()
 
 instance MonadTerminal IO where
-    printString = putStrLn
+    printString = putStr
 
 runApp :: (Monad m) => (World -> m World) -> World -> m ()
 runApp f = repeatUntil f exiting
@@ -40,11 +40,14 @@ repeatUntil :: (Monad m) => (a -> m a) -> (a -> Bool) -> a -> m ()
 repeatUntil f p = go where go a = f a >>= \b -> unless (p b) (go b)
 
 
-appLoop
-    :: (MonadSDLPoll m, MonadTerminal m) => (World -> m ()) -> World -> m World
-appLoop renderFunc a = do
-    a' <- updateApp a <$> pollIntents
-    a' <$ renderFunc a'
+appLoop :: (MonadTerminal m, MonadSDLPoll m) => (World -> m ()) -> World -> m World
+appLoop renderFunc a = let s = buttons a in do
+    e <- pollEvents
+    let s' = foldr applyEvent s e
+        i = mkIntent s'
+        a' = a { buttons = s' }
+        a'' = updateApp a' i
+    a'' <$ renderFunc a''
 
 
 updateTime :: MonadSDLPoll m => World -> m World
@@ -55,26 +58,36 @@ updateApp :: World -> [Intent] -> World
 updateApp a = stepFrame . foldl' applyIntent a
 
 
-pollIntents :: (MonadTerminal m, MonadSDLPoll m) => m [Intent]
-pollIntents = mkIntent `fmap2` pollEvents -- her er det vi vil fmappe i en liste, altså vi må fmappe fmappingen!
-        where fmap2 = fmap . fmap
+bbb [] = ""
+bbb xs = show xs ++ "\n"
 
+--pollIntents :: MonadSDLPoll m => ButtonStates -> m [Intent]
+--pollIntents s = mkIntent . foldr applyEvent s <$> pollEvents
+
+pollIntents :: (MonadTerminal m, MonadSDLPoll m) => ButtonStates -> m [Intent]
+pollIntents s = do
+    e <- pollEvents
+    printString $ bbb e
+    let s' = foldr applyEvent s e
+    printString $ show s'
+    printString "\n"
+    return $ mkIntent s'
 
 eventToIntent :: SDL.Event -> Intent
 eventToIntent (SDL.Event _t SDL.QuitEvent) = Quit
 eventToIntent _                            = Idle
 
-step = 10
+step = 2
 
 applyIntent :: World -> Intent -> World
 applyIntent a Quit = a { exiting = True }
-applyIntent a (Con Up) =
+applyIntent a Up =
     let p = player a in a { player = p { yPos = yPos p - step } }
-applyIntent a (Con Down) =
+applyIntent a Down =
     let p = player a in a { player = p { yPos = yPos p + step } }
-applyIntent a (Con Left) =
+applyIntent a Left =
     let p = player a in a { player = p { xPos = xPos p - step } }
-applyIntent a (Con Right) =
+applyIntent a Right =
     let p = player a in a { player = p { xPos = xPos p + step } }
 applyIntent a Idle = a
 

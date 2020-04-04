@@ -1,6 +1,10 @@
+{-# LANGUAGE TupleSections #-}
+
 module Controller
-  ( Intent(..)
-  , Button(..)
+  ( ButtonStates(..)
+  , Intent(..)
+  , initialButtonStates
+  , applyEvent
   , mkIntent
   )
 where
@@ -17,62 +21,105 @@ import           Prelude                 hiding ( Left
                                                 , head
                                                 )
 import           Data.Vector                    ( head )
+import           Data.Maybe                     ( catMaybes )
 import qualified Data.Map.Strict               as M
-import           Data.Word                     ( Word8 )
+                                         hiding ( map )
+import           Data.Word                      ( Word8 )
 import           Foreign.C.String               ( withCString )
 
-data Intent
-  = Con Button
-  | Idle
-  | Quit
+data Intent = Left | Right | Up | Down | Idle | Quit deriving Show
 
-data Button
-  = A
-  | B
-  | X
-  | Y
-  | Up | Down | Left | Right
-  | Start
-  | Select
-  | LeftShoulder
-  | RightShoulder
-  deriving (Bounded, Enum, Ord, Eq)
+data Button = A | B | X | Y | LS | RS | Start | Select | U | D | L | R deriving (Bounded, Enum, Ord, Eq, Show)
+type ButtonStates = M.Map Button ButtonState
 
-mkIntent :: SDL.Event -> Intent
-mkIntent = payloadToIntent . extractPayload
+initialButtonStates = M.fromList $ map (, Released) ([minBound..maxBound] :: [Button])
+
+type Accessor = ButtonStates -> ButtonState
+
+data ButtonState = Pressed | Released deriving (Show, Eq)
+type Transition = (Button, ButtonState)
+
+mkIntent :: ButtonStates -> [Intent]
+mkIntent bs = [quit, up, down, left, right]
+  where select key intent = if M.lookup key bs == Just Pressed then intent else Idle
+        up = select U Up
+        down = select D Down
+        left = select L Left
+        right = select R Right
+        quit = select Select Quit
+
+applyEvent :: SDL.Event -> ButtonStates -> ButtonStates
+applyEvent e s = applyTransitions s . payloadToTransitions . extractPayload $ e
+
+applyTransitions :: ButtonStates -> [Transition] -> ButtonStates
+applyTransitions = foldr apply
+ where
+  apply :: Transition -> ButtonStates -> ButtonStates
+  apply (acc, s) = M.adjust (const s) acc
 
 extractPayload :: SDL.Event -> SDL.EventPayload
 extractPayload (SDL.Event _t p) = p
 
-payloadToIntent :: SDL.EventPayload -> Intent
-payloadToIntent SDL.QuitEvent          = Quit
-payloadToIntent (SDL.JoyAxisEvent   k) = fromJoyAxis k
-payloadToIntent (SDL.JoyButtonEvent k) = fromJoyButton k
-payloadToIntent _                      = Idle
+payloadToTransitions :: SDL.EventPayload -> [Transition]
+payloadToTransitions (SDL.JoyAxisEvent   k) = fromJoyAxis k
+payloadToTransitions (SDL.JoyButtonEvent k) = [fromJoyButton k]
+payloadToTransitions (SDL.KeyboardEvent k) = fromKeyboardEvent k
+payloadToTransitions _ = []
 
-fromJoyButton :: SDL.JoyButtonEventData -> Intent
-fromJoyButton (SDL.JoyButtonEventData _ _      SDL.JoyButtonReleased) = Idle
-fromJoyButton (SDL.JoyButtonEventData _ button _                    ) = maybe
-  Idle
-  Con
-  (M.lookup button buttonMap)
- where
-  buttonMap :: M.Map Word8 Button
-  buttonMap = M.fromList
-    [ (0, X)
-    , (1, A)
-    , (2, B)
-    , (3, Y)
-    , (4, LeftShoulder)
-    , (5, RightShoulder)
-    , (8, Select)
-    , (9, Start)
-    ]
+fromKeyboardEvent (SDL.KeyboardEventData _ _ _ (SDL.Keysym _ SDL.KeycodeEscape _)) = [(Start, Pressed)]
 
-fromJoyAxis :: SDL.JoyAxisEventData -> Intent
-fromJoyAxis (SDL.JoyAxisEventData _ _    0     ) = Idle
-fromJoyAxis (SDL.JoyAxisEventData _ axis amount) = case (axis, amount > 0) of
-  (1, False) -> Con Up
-  (1, True ) -> Con Down
-  (0, False) -> Con Left
-  (0, True ) -> Con Right
+fromJoyButton :: SDL.JoyButtonEventData -> Transition
+fromJoyButton (SDL.JoyButtonEventData _ button state) =
+  (buttonMap button, buttonStateMap state)
+
+fromJoyAxis :: SDL.JoyAxisEventData -> [Transition]
+fromJoyAxis (SDL.JoyAxisEventData _ 0 val)
+  | val == 0 = [(L, Released), (R, Released)]
+  | val < 0  = [(L, Pressed)]
+  | val > 0  = [(R, Pressed)]
+fromJoyAxis (SDL.JoyAxisEventData _ 1 val)
+  | val == 0 = [(U, Released), (D, Released)]
+  | val < 0  = [(U, Pressed)]
+  | val > 0  = [(D, Pressed)]
+
+buttonMap :: Word8 -> Button
+buttonMap 0 = X
+buttonMap 1 = A
+buttonMap 2 = B
+buttonMap 3 = Y
+buttonMap 4 = LS
+buttonMap 5 = RS
+buttonMap 8 = Select
+buttonMap 9 = Start
+
+buttonStateMap :: SDL.JoyButtonState -> ButtonState
+buttonStateMap SDL.JoyButtonPressed  = Pressed
+buttonStateMap SDL.JoyButtonReleased = Released
+
+{-
+buttonStatesToIntent :: ButtonStates = [Intet]
+
+updateButtonStates :: SDL.Event -> ButtonStates -> ButtonStates
+updateButtonStates = applyTransitions . payloadToTransitions . extractPayload 
+
+applyTransitions :: [Transition] -> ButtonStates -> ButtonStates
+applyTransitions changes states = foldr transitionButton states changes
+
+transitionButton :: Transition -> ButtonStates -> ButtonStates
+transitionButton (button, state) = M.adjust (const state) button
+
+
+
+payloadToTransitions :: SDL.EventPayload -> [Transition]
+payloadToButton (SDL.JoyAxisEvent k) = fromJoyAxis k
+payloadToTransitions (SDL.JoyButtonEvent k) = [fromJoyButton k]
+
+
+
+
+
+
+
+
+-}
+
