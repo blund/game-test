@@ -4,7 +4,7 @@ module Utils where
 
 import qualified SDL
 import qualified SDL.Image
-import qualified SDL.Framerate as F
+import qualified SDL.Framerate
 import qualified SDL.Font
 import qualified SDL.Input.Joystick
 
@@ -12,7 +12,7 @@ import           Control.Monad                  ( void )
 import           Control.Monad.IO.Class         ( MonadIO
                                                 , liftIO
                                                 )
-import Control.Monad.Trans.Control
+import           Control.Monad.Trans.Control
 import           Data.Text                      ( Text )
 
 import qualified Data.Vector                   as V
@@ -25,8 +25,12 @@ withSDL flags op = do
   void op
   SDL.quit
 
-withFPSManager :: (MonadBaseControl IO m, MonadIO m) => F.Framerate -> (F.Manager -> m a) -> m a
-withFPSManager = F.with
+withFPSManager
+  :: (MonadBaseControl IO m, MonadIO m)
+  => SDL.Framerate.Framerate
+  -> (SDL.Framerate.Manager -> m a)
+  -> m a
+withFPSManager = SDL.Framerate.with
 
 withSDLImage :: (MonadIO m) => m a -> m ()
 withSDLImage op = do
@@ -43,9 +47,7 @@ withSDLFont op = do
 withFirstGamepad :: (MonadIO m, Monad m) => (SDL.Joystick -> m a) -> m ()
 withFirstGamepad op = do
   js <- SDL.availableJoysticks
-  liftIO $ print js
   js' <- SDL.openJoystick (V.head js)
-  liftIO $ print js
   void $ op js'
   SDL.closeJoystick js'
 
