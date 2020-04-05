@@ -38,7 +38,7 @@ dependencies:
 
 library:
   source-dirs: src
-  exposed-modules: [Utils, Controller, World, Draw, App]
+  exposed-modules: [Utils, Controller, World, Draw, App, Drawables.Entity]
 
 executables:
   neuron-axon-echelon-exe:

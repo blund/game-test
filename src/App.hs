@@ -5,10 +5,10 @@ module App
 where
 
 import qualified SDL
-import qualified SDL.Framerate as F
+import qualified SDL.Framerate                 as F
 import           World
 import           Controller
-
+import qualified Drawables.Entity              as E
 
 import           Prelude                 hiding ( Left
                                                 , Right
@@ -16,6 +16,7 @@ import           Prelude                 hiding ( Left
 import           Data.Word                      ( Word32 )
 import           Data.Foldable                  ( foldl' )
 import           Control.Monad                  ( unless )
+
 
 -- | Make useful IO monads!
 class (Monad m) => MonadSDLPoll m where
@@ -33,72 +34,50 @@ class (Monad m) => MonadTerminal m where
 instance MonadTerminal IO where
     printString = putStr
 
+
+data Intent = Left | Right | Up | Down | Idle | Quit deriving (Show)
+
+
 runApp :: (Monad m) => (World -> m World) -> World -> m ()
 runApp f = repeatUntil f exiting
-
 
 repeatUntil :: (Monad m) => (a -> m a) -> (a -> Bool) -> a -> m ()
 repeatUntil f p = go where go a = f a >>= \b -> unless (p b) (go b)
 
-
 appLoop :: (MonadSDLPoll m) => (World -> m ()) -> World -> m World
-appLoop renderFunc a = let s = buttons a in do
-    e <- pollEvents
-    let s' = foldr applyEvent s e
-        i = mkIntent s'
-        a' = a { buttons = s' }
-        a'' = updateApp a' i
+appLoop renderFunc a = do
+    a' <- updateButtonStates a
+    let a'' = updateApp a' $ mkIntent (buttons a')
     a'' <$ renderFunc a''
 
+mkIntent :: ButtonStates -> [Intent]
+mkIntent ss = [quit, up, down, left, right]
+  where
+    select key intent = if getButton key ss == Pressed then intent else Idle
+    up    = select U Up
+    down  = select D Down
+    left  = select L Left
+    right = select R Right
+    quit  = select Select Quit
 
-updateTime :: MonadSDLPoll m => World -> m World
-updateTime a = ticks >>= \t -> return a { time = t - time a }
-
+updateButtonStates :: MonadSDLPoll m => World -> m World
+updateButtonStates a = do
+    e <- pollEvents
+    return $ a { buttons = foldr applyEvent (buttons a) e }
 
 updateApp :: World -> [Intent] -> World
-updateApp a = stepFrame . foldl' applyIntent a
+updateApp a = animatePlayer . foldl' applyIntent a
+    where animatePlayer a = let p = player a in a { player = E.animate p }
 
-
-bbb [] = ""
-bbb xs = show xs ++ "\n"
-
---pollIntents :: MonadSDLPoll m => ButtonStates -> m [Intent]
---pollIntents s = mkIntent . foldr applyEvent s <$> pollEvents
-
-pollIntents :: (MonadTerminal m, MonadSDLPoll m) => ButtonStates -> m [Intent]
-pollIntents s = do
-    e <- pollEvents
-    printString $ bbb e
-    let s' = foldr applyEvent s e
-    printString $ show s'
-    printString "\n"
-    return $ mkIntent s'
-
-eventToIntent :: SDL.Event -> Intent
-eventToIntent (SDL.Event _t SDL.QuitEvent) = Quit
-eventToIntent _                            = Idle
-
-step = 1
+step = 2
 
 applyIntent :: World -> Intent -> World
 applyIntent a Quit = a { exiting = True }
-applyIntent a Up =
-    let p = player a in a { player = p { yPos = yPos p - step } }
+applyIntent a Up   = let p = player a in a { player = p { E.y = E.y p - step } }
 applyIntent a Down =
-    let p = player a in a { player = p { yPos = yPos p + step } }
+    let p = player a in a { player = p { E.y = (E.y p) + step } }
 applyIntent a Left =
-    let p = player a in a { player = p { xPos = xPos p - step } }
+    let p = player a in a { player = p { E.x = (E.x p) - step } }
 applyIntent a Right =
-    let p = player a in a { player = p { xPos = xPos p + step } }
+    let p = player a in a { player = p { E.x = (E.x p) + step } }
 applyIntent a Idle = a
-
-
-stepFrame :: World -> World
-stepFrame a = a { frame = frame a + 1 }
-
-logFPS :: MonadTerminal m => World -> m ()
-logFPS world = do
-    let frames   = frame world
-        seconds  = fromIntegral (time world) / 1000
-        seconds' = if seconds <= 0 then 1 else seconds
-    printString (show (fromIntegral frames / seconds))

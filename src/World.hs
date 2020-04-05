@@ -1,9 +1,10 @@
 module World
   ( World(..)
   , initialWorld
-  , Player(..)
   )
 where
+
+import Drawables.Entity
 
 import           Data.Word                      ( Word32 )
 import           Foreign.C.Types                ( CInt )
@@ -12,28 +13,16 @@ import           Controller
 
 data World = World
   { exiting :: Bool
-  , frame   :: Int
-  , flipped :: Bool
-  , countedFrames :: Int
   , time :: Word32
-  , player :: Player
   , buttons :: ButtonStates
+  , player :: Entity
   }
 
 
-data Player = Player
-  {
-    xPos :: CInt
-  , yPos :: CInt
-  }
-
-initialWorld :: World
-initialWorld = World
+initialWorld :: Entity -> World
+initialWorld p = World
   { exiting       = False
-  , frame         = 0
-  , flipped       = False
-  , countedFrames = 0
   , time          = 0
-  , player        = Player 0 0
   , buttons = initialButtonStates
+  , player = p
   }

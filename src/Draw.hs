@@ -2,6 +2,7 @@
 
 module Draw
   ( MonadSDLRender(..)
+  , Drawable(..)
   , Sprite
   , mkSprite
   , mkDraw
@@ -20,7 +21,6 @@ import qualified SDL.Image
 import qualified SDL.Font
 import qualified Utils                         as U
 import qualified Controller                    as C
-import           World
 
 import           Data.StateVar
 import           Data.Word
@@ -65,6 +65,12 @@ instance MonadSDLRender IO where
   write        = ($=)
   queryTexture = SDL.queryTexture
 
+class Drawable d where
+    getSprite :: d -> Sprite
+    animate :: d -> d
+    getFrame :: d -> Int
+    xPos :: d -> CInt
+    yPos :: d -> CInt
 
 data Sprite = Sprite { texture :: SDL.Texture
                      , width   :: CInt
@@ -89,26 +95,26 @@ mkSprite texture width = do
 
 
 mkDraw
-  :: Sprite
-  -> World
+  :: Drawable d
+  => d
   -> (SDL.Texture, Maybe (SDL.Rectangle CInt), Maybe (SDL.Rectangle CInt))
-mkDraw sprite world = (texture, Just mask, Just pos)
+mkDraw d = (texture, Just mask, Just pos)
  where
-  Sprite texture width height frames = sprite
-  mask    = getMask (frame world) frames height width
+  Sprite texture width height frames = getSprite d
+  mask    = getMask (getFrame d) frames height width
   resize  = 4
   height' = fromIntegral height * resize
   width'  = fromIntegral width * resize
-  pos     = U.mkRect (xPos (player world)) (yPos (player world)) width' height'
+  pos     = U.mkRect (xPos d) (yPos d) width' height'
 
 
-draw :: MonadSDLRender m => SDL.Renderer -> Sprite -> World -> m ()
-draw r sprite world = uncurry3 (copy r) (mkDraw sprite world)
+draw :: (MonadSDLRender m, Drawable d) => SDL.Renderer -> d -> m ()
+draw r d = uncurry3 (copy r) (mkDraw d)
 
 
-drawEx :: MonadSDLRender m => SDL.Renderer -> Sprite -> World -> CDouble -> m ()
-drawEx r sprite world deg = copyEx r t m p deg Nothing (SDL.V2 False False)
-  where (t, m, p) = mkDraw sprite world
+drawEx :: (MonadSDLRender m, Drawable d) => SDL.Renderer -> d -> CDouble -> m ()
+drawEx r d deg = copyEx r t m p deg Nothing (SDL.V2 False False)
+  where (t, m, p) = mkDraw d
 
 
 getMask :: Int -> Int -> CInt -> CInt -> SDL.Rectangle CInt

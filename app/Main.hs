@@ -9,10 +9,11 @@ module Main
   )
 where
 
-import qualified SDL
-import qualified SDL.Image
-import qualified SDL.Framerate                 as F
+import qualified SDL                     hiding ( delay )
+import qualified SDL.Image                     as SDL
+import qualified SDL.Framerate                 as SDL
 
+import           Drawables.Entity
 import           Control.Monad.IO.Class         ( MonadIO )
 import           Utils
 import           Controller
@@ -21,13 +22,13 @@ import           Draw
 import           App
 
 class (Monad m, MonadIO m) => MonadSDLgfx m where
-    delay :: F.Manager -> m Int
-    delay_ :: F.Manager -> m ()
+    delay :: SDL.Manager -> m Int
+    delay_ :: SDL.Manager -> m ()
 
 
 instance MonadSDLgfx IO where
-  delay  = F.delay
-  delay_ = F.delay_
+  delay  = SDL.delay
+  delay_ = SDL.delay_
 
 
 main :: IO ()
@@ -35,22 +36,23 @@ main = withSDL [SDL.InitJoystick] $ withFPSManager 60 $ \m ->
   withSDLImage $ withFirstGamepad $ \j ->
     withWindow "Neuron Axon Echelon" (640, 480) $ \w -> withRenderer w $ \r ->
       do
-        t <- SDL.Image.loadTexture r "./assets/wiz.png"
+        t <- SDL.loadTexture r "./assets/wiz.png"
         s <- mkSprite t 24
-        let doRender = renderApp r s m
-        runApp (appLoop doRender) initialWorld
+        let player   = Entity s 0 100 100
+        let doRender = renderApp r m
+        runApp (appLoop doRender) (initialWorld player)
         SDL.destroyTexture t
 
 renderApp
   :: (MonadSDLgfx m, MonadSDLRender m)
   => SDL.Renderer
-  -> Sprite
-  -> F.Manager
+  -> SDL.Manager
   -> World
   -> m ()
-renderApp r s manager world = do
+renderApp r m w = do
+  let p = player w
   clearScreen r
   drawBackground r
-  drawEx r s world 0
+  drawEx r p 0
   present r
-  delay_ manager
+  delay_ m
