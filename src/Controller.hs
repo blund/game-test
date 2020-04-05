@@ -2,10 +2,11 @@
 
 module Controller
   ( ButtonStates(..)
-  , Intent(..)
+  , Button(..)
+  , ButtonState(..)
   , initialButtonStates
+  , getButton
   , applyEvent
-  , mkIntent
   )
 where
 
@@ -17,7 +18,6 @@ import           Prelude                 hiding ( Left
 import           Data.Word                      ( Word8 )
 
 
-data Intent = Left | Right | Up | Down | Idle | Quit deriving (Show)
 
 data Button = A | B | X | Y | LS | RS | Start | Select | U | D | L | R deriving (Bounded, Enum, Ord, Eq, Show)
 
@@ -82,18 +82,6 @@ initialButtonStates = ButtonStates Released
                                    Released
                                    Released
 
-mkIntent :: ButtonStates -> [Intent]
-mkIntent ss = [quit, up, down, left, right]
- where
-  select key intent = if getButton key ss == Pressed then intent else Idle
-  up    = select U Up
-  down  = select D Down
-  left  = select L Left
-  right = select R Right
-  quit  = if getButton Select ss == Pressed && getButton Start ss == Pressed
-    then Quit
-    else Idle
-
 applyEvent :: SDL.Event -> ButtonStates -> ButtonStates
 applyEvent e s = applyTransitions s . payloadToTransitions . extractPayload $ e
 
@@ -110,6 +98,7 @@ applyTransitions = foldr apply
 payloadToTransitions :: SDL.EventPayload -> [Transition]
 payloadToTransitions (SDL.JoyAxisEvent   k) = fromJoyAxis k
 payloadToTransitions (SDL.JoyButtonEvent k) = [fromJoyButton k]
+payloadToTransitions (SDL.KeyboardEvent  k) = [fromKeyboard k]
 payloadToTransitions _                      = []
 
 fromJoyAxis :: SDL.JoyAxisEventData -> [Transition]
@@ -139,3 +128,18 @@ buttonMap 9 = Start
 buttonStateMap :: SDL.JoyButtonState -> ButtonState
 buttonStateMap SDL.JoyButtonPressed  = Pressed
 buttonStateMap SDL.JoyButtonReleased = Released
+
+fromKeyboard :: SDL.KeyboardEventData -> Transition
+fromKeyboard (SDL.KeyboardEventData _ motion _ keysym) =
+  (keyboardMap keysym, motionMap motion)
+
+keyboardMap :: SDL.Keysym -> Button
+keyboardMap (SDL.Keysym _ SDL.KeycodeUp     _) = U
+keyboardMap (SDL.Keysym _ SDL.KeycodeDown   _) = D
+keyboardMap (SDL.Keysym _ SDL.KeycodeLeft   _) = L
+keyboardMap (SDL.Keysym _ SDL.KeycodeRight  _) = R
+keyboardMap (SDL.Keysym _ SDL.KeycodeReturn _) = Select
+
+motionMap :: SDL.InputMotion -> ButtonState
+motionMap SDL.Pressed  = Pressed
+motionMap SDL.Released = Released
