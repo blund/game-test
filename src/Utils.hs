@@ -1,22 +1,19 @@
-
-{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE FlexibleContexts #-}
 module Utils where
 
 import qualified SDL
-import qualified SDL.Image
-import qualified SDL.Framerate
 import qualified SDL.Font
+import qualified SDL.Framerate
+import qualified SDL.Image
 import qualified SDL.Input.Joystick
 
-import           Control.Monad                  ( void )
-import           Control.Monad.IO.Class         ( MonadIO
-                                                , liftIO
-                                                )
+import           Control.Monad               (void)
+import           Control.Monad.IO.Class      (MonadIO, liftIO)
 import           Control.Monad.Trans.Control
-import           Data.Text                      ( Text )
+import           Data.Text                   (Text)
 
-import qualified Data.Vector                   as V
-import           SDL                            ( ($=) )
+import qualified Data.Vector                 as V
+import           SDL                         (($=))
 
 
 withSDL :: (MonadIO m) => [SDL.InitFlag] -> m a -> m ()
