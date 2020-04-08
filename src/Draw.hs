@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Draw
   ( MonadSDLRender(..)
@@ -13,26 +13,22 @@ module Draw
   )
 where
 
-import           Prelude                 hiding ( Left
-                                                , Right
-                                                )
+import qualified Controller       as C
+import           Prelude          hiding (Left, Right)
 import qualified SDL
-import qualified SDL.Image
 import qualified SDL.Font
-import qualified Utils                         as U
-import qualified Controller                    as C
+import qualified SDL.Image
+import qualified Utils            as U
 
 import           Data.StateVar
+import           Data.Tuple.Extra (uncurry3)
 import           Data.Word
-import           Data.Tuple.Extra               ( uncurry3 )
 
-import           SDL                            ( ($=) )
-import           Foreign.C.Types                ( CInt
-                                                , CDouble
-                                                )
+import           Foreign.C.Types  (CDouble, CInt)
+import           SDL              (($=))
 
-import           Control.Monad                  ( unless )
-import           Data.Foldable                  ( foldl' )
+import           Control.Monad    (unless)
+import           Data.Foldable    (foldl')
 
 
 class (Monad m) => MonadSDLRender m where

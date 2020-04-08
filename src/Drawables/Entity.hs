@@ -4,16 +4,14 @@ module Drawables.Entity
     )
 where
 
-import           Draw                           ( Sprite
-                                                , Drawable(..)
-                                                )
+import           Draw            (Drawable (..), Sprite)
 import           Foreign.C.Types
 
 data Entity = Entity
     { sprite :: Sprite
-    , frame :: Int
-    , x :: CInt
-    , y :: CInt
+    , frame  :: Int
+    , x      :: CInt
+    , y      :: CInt
     }
 
 instance Drawable Entity where

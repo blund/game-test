@@ -4,18 +4,16 @@ module App
     )
 where
 
-import qualified SDL
-import qualified SDL.Framerate                 as F
-import           World
 import           Controller
-import qualified Drawables.Entity              as E
+import qualified Drawables.Entity as E
+import qualified SDL
+import qualified SDL.Framerate    as F
+import           World
 
-import           Prelude                 hiding ( Left
-                                                , Right
-                                                )
-import           Data.Word                      ( Word32 )
-import           Data.Foldable                  ( foldl' )
-import           Control.Monad                  ( unless )
+import           Control.Monad    (unless)
+import           Data.Foldable    (foldl')
+import           Data.Word        (Word32)
+import           Prelude          hiding (Left, Right)
 
 
 -- | Make useful IO monads!

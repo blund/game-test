@@ -40,7 +40,7 @@ main = withSDL [SDL.InitJoystick] $ withFPSManager 60 $ \m ->
         s <- mkSprite t 24
         let player   = Entity s 0 100 100
         let doRender = renderApp r m
-        runApp (appLoop doRender) (initialWorld player)
+        runApp (appLoop doRender) (initialWorld player [player])
         SDL.destroyTexture t
 
 renderApp
@@ -50,9 +50,12 @@ renderApp
   -> World
   -> m ()
 renderApp r m w = do
-  let p = player w
   clearScreen r
   drawBackground r
-  drawEx r p 0
+  drawEntities r w
+  drawPlayer r w
   present r
   delay_ m
+    where
+      drawPlayer r w = draw r $ player w
+      drawEntities r w = mapM_ (draw r) $ entities w

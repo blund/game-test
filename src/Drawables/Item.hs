@@ -2,14 +2,14 @@ module Drawables.Item
     ( Item(..)
     ) where
 
-import Draw (Sprite, Drawable(..))
-import Foreign.C.Types
+import           Draw            (Drawable (..), Sprite)
+import           Foreign.C.Types
 
-data Item = Item 
+data Item = Item
     { sprite :: Sprite
-    , frame :: Int
-    , x :: CInt
-    , y :: CInt
+    , frame  :: Int
+    , x      :: CInt
+    , y      :: CInt
     }
 
 instance Drawable Item where
@@ -17,3 +17,4 @@ instance Drawable Item where
     getFrame = frame
     xPos = x
     yPos = y
+    animate a = a { frame = frame a + 1 }
