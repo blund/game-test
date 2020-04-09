@@ -12,6 +12,8 @@ data Entity = Entity
     , frame  :: Int
     , x      :: CInt
     , y      :: CInt
+    , yVel   :: CInt
+    , xVel   :: CInt
     }
 
 instance Drawable Entity where

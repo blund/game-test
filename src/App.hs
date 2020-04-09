@@ -42,6 +42,7 @@ runApp f = repeatUntil f exiting
 repeatUntil :: (Monad m) => (a -> m a) -> (a -> Bool) -> a -> m ()
 repeatUntil f p = go where go a = f a >>= \b -> unless (p b) (go b)
 
+
 appLoop :: (MonadSDLPoll m) => (World -> m ()) -> World -> m World
 appLoop renderFunc a = do
     a' <- updateButtonStates a

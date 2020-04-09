@@ -1,0 +1,6 @@
+Ting å gjøre:
+* TODO [0/4] Tids-avhengig bevegelse
+** TODO Sett opp systemet for å lese tid siden forrige frame
+** TODO Implementer bevegelse for brukerkarakteren som bruker dette
+** TODO Implementer animasjon av brukerkarakter som bruker dette systemet
+** TODO Bygg på brukerkarakterens bevegelse, legg til akselerasjon og retadasjon

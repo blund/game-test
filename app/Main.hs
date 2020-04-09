@@ -1,6 +1,6 @@
 -- {-# LANGUAGE FlexibleInstances    #-}
 -- {-# LANGUAGE FlexibleContexts     #-}
-{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE OverloadedStrings #-}
 -- {-# LANGUAGE TypeSynonymInstances #-}
 
 
@@ -9,53 +9,40 @@ module Main
   )
 where
 
-import qualified SDL                     hiding ( delay )
-import qualified SDL.Image                     as SDL
-import qualified SDL.Framerate                 as SDL
+import qualified SDL                    hiding (delay)
+import qualified SDL.Image              as SDL
 
-import           Drawables.Entity
-import           Control.Monad.IO.Class         ( MonadIO )
-import           Utils
-import           Controller
-import           World
-import           Draw
 import           App
-
-class (Monad m, MonadIO m) => MonadSDLgfx m where
-    delay :: SDL.Manager -> m Int
-    delay_ :: SDL.Manager -> m ()
-
-
-instance MonadSDLgfx IO where
-  delay  = SDL.delay
-  delay_ = SDL.delay_
-
+import           Control.Monad.IO.Class (MonadIO)
+import           Controller
+import           Draw
+import           Drawables.Entity
+import           Utils
+import           World
 
 main :: IO ()
-main = withSDL [SDL.InitJoystick] $ withFPSManager 60 $ \m ->
+main = withSDL [SDL.InitJoystick] $
   withSDLImage $ withFirstGamepad $ \j ->
     withWindow "Neuron Axon Echelon" (640, 480) $ \w -> withRenderer w $ \r ->
       do
         t <- SDL.loadTexture r "./assets/wiz.png"
         s <- mkSprite t 24
-        let player   = Entity s 0 100 100
-        let doRender = renderApp r m
+        let player   = Entity s 0 100 100 0 0
+        let doRender = renderApp r
         runApp (appLoop doRender) (initialWorld player [player])
         SDL.destroyTexture t
 
 renderApp
-  :: (MonadSDLgfx m, MonadSDLRender m)
+  :: (MonadSDLRender m)
   => SDL.Renderer
-  -> SDL.Manager
   -> World
   -> m ()
-renderApp r m w = do
+renderApp r w = do
   clearScreen r
   drawBackground r
   drawEntities r w
   drawPlayer r w
   present r
-  delay_ m
     where
       drawPlayer r w = draw r $ player w
       drawEntities r w = mapM_ (draw r) $ entities w
