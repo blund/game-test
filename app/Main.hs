@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts  #-}
 -- {-# LANGUAGE FlexibleInstances    #-}
 -- {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -11,6 +12,8 @@ where
 
 import qualified SDL                    hiding (delay)
 import qualified SDL.Image              as SDL
+
+import           Linear.V2
 
 import           App
 import           Control.Monad.IO.Class (MonadIO)
@@ -27,7 +30,7 @@ main = withSDL [SDL.InitJoystick] $
       do
         t <- SDL.loadTexture r "./assets/wiz.png"
         s <- mkSprite t 24
-        let player   = Entity s 0 100 100 0 0
+        let player   = Entity s 0 (V2 0 0) (V2 0 0)
         let doRender = renderApp r
         runApp (appLoop doRender) (initialWorld player [player])
         SDL.destroyTexture t
@@ -44,5 +47,5 @@ renderApp r w = do
   drawPlayer r w
   present r
     where
-      drawPlayer r w = draw r $ player w
-      drawEntities r w = mapM_ (draw r) $ entities w
+      drawPlayer r w = draw r $ _player w
+      drawEntities r w = mapM_ (draw r) $ _entities w

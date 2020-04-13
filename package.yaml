@@ -35,10 +35,12 @@ dependencies:
 - containers
 - monad-control
 - transformers
+- linear
+- lens
 
 library:
   source-dirs: src
-  exposed-modules: [Utils, Controller, World, Draw, App, Drawables.Entity, Drawables.Item]
+  exposed-modules: [Utils, Controller, World, Draw, App, Math, Drawables.Entity, Drawables.Item ]
 
 executables:
   neuron-axon-echelon-exe:

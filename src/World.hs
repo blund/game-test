@@ -1,33 +1,41 @@
+{-# LANGUAGE TemplateHaskell #-}
 module World
   ( World(..)
   , initialWorld
+  , controller
+  , player
+  , entities
+  , time
+  , exiting
   )
 where
 
-import Drawables.Entity
-import Drawables.Item
+import           Drawables.Entity
+import           Drawables.Item
 
-import           Data.Word                      ( Word32 )
-import           Foreign.C.Types                ( CInt )
-import qualified Data.Map                      as M
+import           Control.Lens
 import           Controller
+import qualified Data.Map         as M
+import           Data.Word        (Word32)
+import           Foreign.C.Types  (CInt)
 
 data World = World
-  { exiting :: Bool
-  , time :: Word32
-  , buttons :: ButtonStates
-  , player :: Entity
-  , entities :: [Entity]
-  , items :: [Item]
-  }
+  { _exiting    :: Bool
+  , _time       :: Float
+  , _controller :: Controller
+  , _player     :: Entity
+  , _entities   :: [Entity]
+  , _items      :: [Item]
+  } deriving (Show)
 
+$(makeLenses ''World)
 
 initialWorld :: Entity -> [Entity] -> World
 initialWorld p e = World
-  { exiting       = False
-  , time          = 0
-  , buttons = initialButtonStates
-  , player = p
-  , entities = e
-  , items = []
+  { _exiting       = False
+  , _time          = 0
+  , _controller = initialController
+  , _player = p
+  , _entities = e
+  , _items = []
   }

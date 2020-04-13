@@ -10,7 +10,7 @@ data Item = Item
     , frame  :: Int
     , x      :: CInt
     , y      :: CInt
-    }
+    } deriving (Show)
 
 instance Drawable Item where
     getSprite = sprite
